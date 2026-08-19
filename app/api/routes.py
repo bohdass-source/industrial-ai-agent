@@ -45,7 +45,7 @@ async def agent_stream(request: AgentRequest):
                 yield f"data: {chunk}\n\n"
         except Exception as exc:
             logger.error("agent/stream error: %s", exc)
-            yield f"data: ERROR: {exc}\n\n"
+            yield "data: ERROR: Agent execution failed. Please try again later.\n\n"
         finally:
             yield "data: [DONE]\n\n"
 
