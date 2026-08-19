@@ -7,7 +7,7 @@ reasoning step.  All database I/O uses synchronous SQLAlchemy sessions
 """
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from langchain_core.tools import tool
 from sqlalchemy.orm import Session
@@ -68,7 +68,7 @@ def search_manual(machine_id: str, query: str) -> str:
             score = sum(1 for word in query_lower.split() if word in r.chunk_text.lower())
             scored.append((score, r.chunk_text))
         scored.sort(key=lambda x: x[0], reverse=True)
-        top = [text for _, text in scored[:3] if scored[0][0] > 0]
+        top = [text for _, text in scored[:3]] if scored[0][0] > 0 else []
         if not top:
             return f"No relevant manual sections found for query '{query}' on machine '{machine_id}'."
         return "\n\n".join(top)
@@ -123,7 +123,7 @@ def create_maintenance_ticket(machine_id: str, error_code: str, description: str
                 error_code=error_code,
                 description=description,
                 status="open",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
             session.add(ticket)
             session.commit()

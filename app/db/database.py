@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column,
@@ -31,7 +31,7 @@ class MaintenanceHistory(Base):
     description = Column(Text, nullable=False)
     resolution = Column(Text, nullable=True)
     technician = Column(String(128), nullable=True)
-    recorded_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    recorded_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
 
 class SparePart(Base):
@@ -52,7 +52,7 @@ class MaintenanceTicket(Base):
     error_code = Column(String(64), nullable=True)
     description = Column(Text, nullable=False)
     status = Column(String(32), default="open", nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
 
 class ManualChunk(Base):

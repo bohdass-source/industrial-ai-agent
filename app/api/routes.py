@@ -32,7 +32,7 @@ async def agent_run(request: AgentRequest):
         logger.error("agent/run error: %s", exc)
         return JSONResponse(
             status_code=500,
-            content={"detail": f"Agent execution failed: {exc}"},
+            content={"detail": "Agent execution failed. Please try again later."},
         )
 
 

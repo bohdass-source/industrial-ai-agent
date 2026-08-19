@@ -60,13 +60,11 @@ def _build_graph():
     return graph.compile()
 
 
-_graph = None
+# Eagerly initialise at module load time to avoid thread-safety issues
+_graph = _build_graph()
 
 
 def get_graph():
-    global _graph
-    if _graph is None:
-        _graph = _build_graph()
     return _graph
 
 

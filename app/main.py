@@ -20,6 +20,7 @@ async def lifespan(app: FastAPI):
         logger.info("Database ready.")
     except Exception as exc:
         logger.error("Database initialisation failed: %s", exc)
+        raise
     yield
     logger.info("Shutting down.")
 
