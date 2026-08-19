@@ -1,0 +1,34 @@
+# Environment
+.env
+.env.local
+
+# Python
+.venv/
+.venv-1/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# macOS
+.DS_Store
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Docker volumes (local)
+pgdata/
