@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Секреты и локальная конфигурация
+.env
+
+# Генерируемые данные (создаются скриптом app/seed_data.py)
+app/data/manuals/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/

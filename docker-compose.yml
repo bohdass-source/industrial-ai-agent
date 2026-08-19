@@ -1,0 +1,66 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: ind-agent-db
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_PASSWORD: agent
+      POSTGRES_DB: industrial
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agent -d industrial"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ind-agent-ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        SERVER_PID=$$!
+        for i in $$(seq 1 30); do
+          ollama list >/dev/null 2>&1 && break
+          sleep 1
+        done
+        echo "== pulling models =="
+        ollama pull llama3.1:8b
+        ollama pull nomic-embed-text
+        echo "== ollama ready =="
+        wait $$SERVER_PID
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  app:
+    build: .
+    container_name: ind-agent-app
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://agent:agent@db:5432/industrial
+      CHECKPOINTER_DSN: postgresql://agent:agent@db:5432/industrial
+      LLM_BASE_URL: http://ollama:11434/v1
+      EMBEDDINGS_BASE_URL: http://ollama:11434/v1
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  ollama_data:
